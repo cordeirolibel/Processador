@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 entity processador is
 	port( 	clk : in std_logic;
 			rst : in std_logic;
-
+			reg_write : in std_logic;
 			--=============
 			-- Coisas para teste
 			top_level : in unsigned(15 downto 0);
@@ -57,7 +57,7 @@ architecture a_processador of processador is
 	signal bank_out1, bank_out2: unsigned(15 downto 0);
 	signal bank_read_reg1, bank_read_reg2: unsigned(2 downto 0);
 	signal bank_write_reg : unsigned(2 downto 0);
-	signal reg_write : std_logic;
+	--signal reg_write : std_logic;
 
 	signal ula_in1, ula_in2: unsigned(15 downto 0);
 	signal ula_out: unsigned(15 downto 0);
@@ -68,15 +68,15 @@ architecture a_processador of processador is
 
 	begin
 		--==== Port Maps
-		bank8reg_p: bank8reg port map(read_reg1 =>bank_read_reg1,--
-							read_reg2 =>bank_read_reg2,--
-							write_reg => bank_write_reg,--
-							write_data=>ula_out,
-							reg_write=>reg_write,
-							clk => clk,
-							rst => rst,
-							reg1_out =>bank_out1,
-							reg2_out =>bank_out2
+		bank8reg_p: bank8reg port map(	read_reg1 =>bank_read_reg1,--
+										read_reg2 =>bank_read_reg2,--
+										write_reg => bank_write_reg,--
+										write_data=>ula_out,
+										reg_write=>reg_write,
+										clk => clk,
+										rst => rst,
+										reg1_out =>bank_out1,
+										reg2_out =>bank_out2
 							);
 
 		ula_p: ula port map(	entrA=>ula_in1,
@@ -97,8 +97,7 @@ architecture a_processador of processador is
 		ula_in2 <= bank_out2 when sel_ula_in2 = '0' else
 				   top_level;
 
-		 -- ===Ver essas ligaces===
-		reg_write <= '0';
+		 -- ===Ver essas ligacoes===
 		sel_ula <= "000";--soma
 
 		out_ula <= ula_out;

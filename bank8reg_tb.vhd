@@ -71,6 +71,15 @@ architecture a_bank8reg_tb of bank8reg_tb is
 		wait for 100 ns;
 		read_reg1 <= "001";
 		read_reg2 <= "100";
+		wait for 100 ns;
+		reg_write <= '1';
+		write_reg <= "111";
+		write_data <= "1111111111111111";
+		wait for 100 ns;
+		reg_write <= '0';
+		wait for 100 ns;
+		read_reg1 <= "111";
+		read_reg2 <= "001";
 		wait;
 	end process;
 end architecture;
