@@ -8,9 +8,12 @@ entity processador is
 			reg_write : in std_logic;
 			--=============
 			-- Coisas para teste
-			top_level : in unsigned(15 downto 0);
-			sel_ula_in2 : in std_logic;-- 0:banck->ula   1:cte->ula
-			out_ula : out unsigned(15 downto 0)
+			top_level : in unsigned(15 downto 0); --"Constante"
+			sel_ula_in2 : in std_logic;-- 0:bank->ula   1:cte->ula
+			out_ula : out unsigned(15 downto 0); --saida da ula
+			read_reg1 : in unsigned(2 downto 0); --le registrador
+			read_reg2 : in unsigned(2 downto 0); --le registrador
+			write_reg : in unsigned(2 downto 0) --Seleciona em qual registrador escreve
 
 	);
 end entity;
@@ -55,7 +58,7 @@ architecture a_processador of processador is
 	--==== Sinais
 
 	signal bank_out1, bank_out2: unsigned(15 downto 0);
-	signal bank_read_reg1, bank_read_reg2: unsigned(2 downto 0);
+	--signal bank_read_reg1, bank_read_reg2: unsigned(2 downto 0);
 	signal bank_write_reg : unsigned(2 downto 0);
 	--signal reg_write : std_logic;
 
@@ -68,9 +71,9 @@ architecture a_processador of processador is
 
 	begin
 		--==== Port Maps
-		bank8reg_p: bank8reg port map(	read_reg1 =>bank_read_reg1,--
-										read_reg2 =>bank_read_reg2,--
-										write_reg => bank_write_reg,--
+		bank8reg_p: bank8reg port map(	read_reg1 =>read_reg1,
+										read_reg2 =>read_reg2,
+										write_reg => write_reg,
 										write_data=>ula_out,
 										reg_write=>reg_write,
 										clk => clk,
@@ -81,9 +84,9 @@ architecture a_processador of processador is
 
 		ula_p: ula port map(	entrA=>ula_in1,
 								entrB=>ula_in2,
-								sel=>sel_ula,--
+								sel=>sel_ula,
 								saida => ula_out,
-								zero=>zero_ula_out,--
+								zero=>zero_ula_out,
 								maior=>maior_ula_out,
 								carry=>carry_ula_out
 								);
@@ -97,7 +100,7 @@ architecture a_processador of processador is
 		ula_in2 <= bank_out2 when sel_ula_in2 = '0' else
 				   top_level;
 
-		 -- ===Ver essas ligacoes===
+		
 		sel_ula <= "000";--soma
 
 		out_ula <= ula_out;
