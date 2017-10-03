@@ -6,7 +6,7 @@ entity pc is
 	port( 	wr_en : in std_logic;
 			rst : in std_logic; ----TEM QUE TER RESET?????
 			clk : in std_logic;
-			data_in : unsigned(15 downto 0);
+			data_in : in unsigned(15 downto 0);
 			data_out : out unsigned(15 downto 0)
 	);
 end entity;

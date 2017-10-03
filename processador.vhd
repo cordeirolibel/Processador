@@ -8,7 +8,7 @@ entity processador is
 			reg_write : in std_logic;
 			--=============
 			-- Coisas para teste
-			top_level : in unsigned(15 downto 0); --"Constante"
+			constante : in unsigned(15 downto 0); --"Constante"
 			sel_ula_in2 : in std_logic;-- 0:bank->ula   1:cte->ula
 			out_ula : out unsigned(15 downto 0); --saida da ula
 			read_reg1 : in unsigned(2 downto 0); --le registrador
@@ -57,7 +57,7 @@ architecture a_processador of processador is
 		port( 	wr_en : in std_logic;
 				rst : in std_logic; ----TEM QUE TER RESET?????
 				clk : in std_logic;
-				data_in : unsigned(15 downto 0);
+				data_in : in unsigned(15 downto 0);
 				data_out : out unsigned(15 downto 0)
 		);
 	end component;
@@ -89,6 +89,10 @@ architecture a_processador of processador is
 	signal maior_ula_out : std_logic;
 	signal carry_ula_out : std_logic;
 
+	signal wr_en_pc : std_logic;
+	signal data_in_pc: unsigned(15 downto 0);
+	signal data_out_pc: unsigned(15 downto 0);
+
 	begin
 		--==== Port Maps
 		bank8reg_p: bank8reg port map(	read_reg1 =>read_reg1,
@@ -111,17 +115,29 @@ architecture a_processador of processador is
 								carry=>carry_ula_out
 								);
 
-		
+		pc_p: pc port map(	clk => clk,
+						  	rst => rst,
+						  	wr_en => wr_en_pc,
+						  	data_in => data_in_pc,
+						  	data_out => data_out_pc
+						);
+
+		rom_p: rom port map(clk => clk,
+							endereco=>data_out_pc,
+							dado=>data_in_pc
+							);
 		--==== Ligacoes
 
 		ula_in1 <= bank_out1;
 
 		--Mux
 		ula_in2 <= bank_out2 when sel_ula_in2 = '0' else
-				   top_level;
+				   constante;
 
 		
 		sel_ula <= "000";--soma
 
 		out_ula <= ula_out;
+
+		wr_en_pc <= '0';
 end architecture;
