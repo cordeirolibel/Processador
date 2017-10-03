@@ -51,6 +51,26 @@ architecture a_processador of processador is
 		);
 	end component;
 
+	--==== PC
+
+	component pc is
+		port( 	wr_en : in std_logic;
+				rst : in std_logic; ----TEM QUE TER RESET?????
+				clk : in std_logic;
+				data_in : unsigned(15 downto 0);
+				data_out : out unsigned(15 downto 0)
+		);
+	end component;
+
+	--==== ROM
+
+	component rom is
+		port( 	clk : in std_logic;
+				endereco : in unsigned(6 downto 0);
+				dado : out unsigned(15 downto 0)
+		);
+	end component;
+
 	--==================================================
 	--==== Ligacoes
 	--==================================================
@@ -91,7 +111,7 @@ architecture a_processador of processador is
 								carry=>carry_ula_out
 								);
 
-
+		
 		--==== Ligacoes
 
 		ula_in1 <= bank_out1;
