@@ -50,26 +50,36 @@ architecture a_processador of processador is
 				reg2_out : out unsigned(15 downto 0)
 		);
 	end component;
-
+	
+	
+	--==== UC
+	component uc is
+		port( 	clk : in std_logic;
+				rst : in std_logic;
+				dadoRom : out unsigned(15 downto 0)
+		);
+	end component;
+	
+	
 	--==== PC
 
-	--component pc is
-	--	port( 	wr_en : in std_logic;
-	--			rst : in std_logic; ----TEM QUE TER RESET?????
-	--			clk : in std_logic;
-	--			data_in : in unsigned(15 downto 0);
-	--			data_out : out unsigned(15 downto 0)
-	--	);
-	--end component;
+	component pc is
+		port( 	wr_en : in std_logic;
+				rst : in std_logic; ----TEM QUE TER RESET?????
+				clk : in std_logic;
+				data_in : in unsigned(15 downto 0);
+				data_out : out unsigned(15 downto 0)
+		);
+	end component;
 
 	--==== ROM
 
-	--component rom is
-	--	port( 	clk : in std_logic;
-	--			endereco : in unsigned(6 downto 0);
-	--			dado : out unsigned(15 downto 0)
-	--	);
-	--end component;
+	component rom is
+		port( 	clk : in std_logic;
+				endereco : in unsigned(6 downto 0);
+				dado : out unsigned(15 downto 0)
+		);
+	end component;
 
 	--==================================================
 	--==== Ligacoes
@@ -89,9 +99,9 @@ architecture a_processador of processador is
 	signal maior_ula_out : std_logic;
 	signal carry_ula_out : std_logic;
 
-	--signal wr_en_pc : std_logic;
-	--signal data_in_pc: unsigned(15 downto 0);
-	--signal data_out_pc: unsigned(15 downto 0);
+	signal wr_en_pc : std_logic;
+	signal data_in_pc: unsigned(15 downto 0);
+	signal data_out_pc: unsigned(15 downto 0);
 
 	begin
 		--==== Port Maps
@@ -115,17 +125,17 @@ architecture a_processador of processador is
 								carry=>carry_ula_out
 								);
 
-		--pc_p: pc port map(	clk => clk,
-		--				  	rst => rst,
-		--				  	wr_en => wr_en_pc,
-		--				  	data_in => data_in_pc,
-		--				  	data_out => data_out_pc
-		--				);
+		pc_p: pc port map(	clk => clk,
+						  	rst => rst,
+						  	wr_en => wr_en_pc,
+						  	data_in => data_in_pc,
+						  	data_out => data_out_pc
+						);
 
-		--rom_p: rom port map(clk => clk,
-		--					endereco=>data_out_pc,
-		--					dado=>data_in_pc
-		--					);
+		rom_p: rom port map(clk => clk,
+							endereco=>data_out_pc,
+							dado=>data_in_pc
+							);
 		--==== Ligacoes
 
 		ula_in1 <= bank_out1;
