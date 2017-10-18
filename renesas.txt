@@ -1,0 +1,47 @@
+=======================================================================================
+======================================= Renesas ======================================= 
+=======================================================================================
+
+https://www.renesas.com/en-us/media/products/software-tools/boards-and-kits/renesas-demonstration-kits/v850es-jx3l-lpd/U18953EJ5V0UD00.pdf
+Pag 1052 - APPENDIX D INSTRUCTION SET LIST 
+
+=======================================================================================
+
+Register Symbol Explanation
+R 	1-bit data of a code that specifies reg1 
+r 	1-bit data of the code that specifies reg2
+d 	1-bit displacement data
+i 	1-bit immediate data
+cccc 	4-bit data that shows the condition codes
+
+=======================================================================================
+
+Instruction	   	Opcode			Operation
+ADD reg1,reg2 		rrrrr001110RRRRR 	GR[reg2]<-GR[reg2]+GR[reg1] 
+ADDI imm16,reg1,reg2 	rrrrr110000RRRRR	GR[reg2]<-GR[reg1]+sign-extend(imm16)
+			iiiiiiiiiiiiiiii
+AND reg1,reg2 		rrrrr001010RRRRR 	GR[reg2]<-GR[reg2]AND GR[reg1] 
+ANDI imm16,reg1,reg2 	rrrrr110110RRRRR	GR[reg2]<-GR[reg1]AND zero-extend(imm16)
+			iiiiiiiiiiiiiiii	
+Bcond disp9 		ddddd1011dddcccc [1]	if conditions are satisfied then PC<-PC+sign-extend(disp9) 
+JMP [reg1] 		00000000011RRRRR 	PC<-GR[reg1] 
+JR disp22		0000011110dddddd 	PC<-PC+sign-extend(disp22) 
+			ddddddddddddddd0
+MOV reg1,reg2 		rrrrr000000RRRRR 	GR[reg2]<-GR[reg1] 
+NOP 			0000000000000000 	Pass at least one clock cycle doing nothing. 
+NOT reg1,reg2 		rrrrr000001RRRRR 	GR[reg2]<-NOT(GR[reg1]) 
+OR reg1,reg2 		rrrrr001000RRRRR 	GR[reg2]<-GR[reg2]OR GR[reg1]
+ORI imm16,reg1,reg2 	rrrrr110100RRRRR	GR[reg2]<-GR[reg1]OR zero-extend(imm16) 
+			iiiiiiiiiiiiiiii
+SUB reg1,reg2 		rrrrr001101RRRRR 	GR[reg2]<-GR[reg2]–GR[reg1] 
+XOR reg1,reg2 		rrrrr001001RRRRR 	GR[reg2]<-GR[reg2] XOR GR[reg1] 
+XORI imm16,reg1,reg2 	rrrrr110101RRRRR	GR[reg2]<-GR[reg1] XOR zero-extend (imm16) 
+			iiiiiiiiiiiiiiii
+
+[1] dddddddd: Higher 8 bits of disp9. 
+
+
+
+
+
+ 
