@@ -28,7 +28,7 @@ JMP [reg1] 		00000000011RRRRR 	PC<-GR[reg1]
 JR disp22		0000011110dddddd 	PC<-PC+sign-extend(disp22) 
 			ddddddddddddddd0
 MOV reg1,reg2 		rrrrr000000RRRRR 	GR[reg2]<-GR[reg1] 
-NOP 			0000000000000000 	Pass at least one clock cycle doing nothing. 
+NOP 			0000000000000000 	Pass at least one clock cycle doing nothing. MOV R0, R0
 NOT reg1,reg2 		rrrrr000001RRRRR 	GR[reg2]<-NOT(GR[reg1]) 
 OR reg1,reg2 		rrrrr001000RRRRR 	GR[reg2]<-GR[reg2]OR GR[reg1]
 ORI imm16,reg1,reg2 	rrrrr110100RRRRR	GR[reg2]<-GR[reg1]OR zero-extend(imm16) 
@@ -40,6 +40,24 @@ XORI imm16,reg1,reg2 	rrrrr110101RRRRR	GR[reg2]<-GR[reg1] XOR zero-extend (imm16
 
 [1] dddddddd: Higher 8 bits of disp9. 
 
+=======================================================================================
+
+Codigo:
+ADDI 5,$r0, $r3			00011 110000 00000  	0x1E00
+				  0000000000000101	0x0005
+ADDI 8,$r0, $r4			00100 110000 00000 	0x2600
+				  0000000000001000	0x0008
+ADD $r3, $r4			00100 001110 00011	0x21C3
+MOV $r4, $r5			00100 000000 00101	0x2005
+ADDI -1, $r5,$r5		00101 110000 00001	0x2E01
+				  1111111111111111	0xFFFF
+JR r6				 0000011110 000000 	0x0780
+				  0000000000101000	0x0028
+MOV $r5, $r3			00101 000000 00011	0x2803
+JR -5				 0000011110 000000	0x0780 
+				  1111111111111011	0xFFFB
+
+=======================================================================================
 
 
 
