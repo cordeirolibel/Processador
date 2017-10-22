@@ -8,13 +8,14 @@ end;
 architecture a_maquinaEstados_tb of maquinaEstados_tb is
  	component maquinaEstados is
  		port( 	clk : in std_logic;
-				estado : out std_logic;
+				estado: out unsigned(1 downto 0);
 				rst : in std_logic
 		);
 	end component;
 
 	signal clk,estado,rst : std_logic;
-	
+	signal estado: unsigned(1 downto 0);
+
 	begin
 		uut: maquinaEstados port map(	clk => clk,
 										estado => estado,

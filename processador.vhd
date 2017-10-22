@@ -5,9 +5,9 @@ use ieee.numeric_std.all;
 entity processador is
 	port( 	clk : in std_logic;
 			rst : in std_logic;
-			reg_write : in std_logic;
 			--==================
 			-- Coisas para teste
+			reg_write : in std_logic;
 			constante : in unsigned(15 downto 0); --"Constante"
 			sel_ula_in2 : in std_logic;-- 0:bank->ula   1:cte->ula
 			out_ula : out unsigned(15 downto 0); --saida da ula
@@ -53,7 +53,7 @@ architecture a_processador of processador is
 	
 	
 	--==== UC
-	component uc is
+	component unidadeControle is
 		port( 	clk : in std_logic;
 				rst : in std_logic;
 				dadoRom : out unsigned(15 downto 0)
