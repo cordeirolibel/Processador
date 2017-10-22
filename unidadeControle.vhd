@@ -5,12 +5,15 @@ use ieee.numeric_std.all;
 entity unidadeControle is
 	port( 	clk : in std_logic;
 			rst : in std_logic;
+			-- Instruction register
 			dado_rom : in unsigned(15 downto 0);
 			read_reg1: out unsigned (2 downto 0);
 			read_reg2: out unsigned (2 downto 0);
 			write_reg: out unsigned (2 downto 0);
-			ALUSrc : in std_logic
-			
+			-- Control
+			reg_write : out std_logic;
+			ALUSrc : out std_logic;
+			ALUOp: out unsigned(2 downto 0)
 
 	);
 end entity;
@@ -43,7 +46,8 @@ architecture a_unidadeControle of unidadeControle is
 	signal reg2 : unsigned(4 downto 0);
 	signal cte : unsigned(15 downto 0);
 
-	signal duas_int : std_logic;
+	signal second_int : std_logic;
+	signal pre_second_int : std_logic;
 
 	begin
 		--==== Port Maps
@@ -61,28 +65,51 @@ architecture a_unidadeControle of unidadeControle is
 		reg2 <= dado_rom(15 downto 11);
 		cte <= dado_rom;
 
-		duas_int <= '1' when estado = "00" and duas_int = '0' and
-							(opcode = "110000" or
-							opcode = "110110" or
-							opcode = "011110" or
-							opcode = "110100" or
-							opcode = "110101" ) else
+		-- Flags:
+		-- salva o proximo valor de second_int 
+		pre_second_int <= '1' when estado = "10" and write_next_int = '0' and
+							(opcode = "110000" or--addi
+							 opcode = "110110" or--andi
+							 opcode = "110100" or--ori
+							 opcode = "110101" )else--xori
+					  	'0';
+
+		-- muda somente no estado 00
+		second_int <= pre_second_int when estado = "00" else
+					  second_int;
+
+
+		-- ULA: OK
+
+		ALUOp <= "000" when (opcode = "001110" or opcode = "110000")and(estado = "01" and second_int = '0') else -- add e addi
+				 "001" when (opcode = "001101")						and(estado = "01" and second_int = '0') else -- sub
+				 --maior 010
+				 "011" when (opcode = "001010" or opcode = "110110")and(estado = "01" and second_int = '0') else -- and e andi
+				 "100" when (opcode = "001000" or opcode = "110100")and(estado = "01" and second_int = '0') else -- or e ori
+				 "101" when (opcode = "000001")						and(estado = "01" and second_int = '0') else -- not
+				 "110" when (opcode = "001001" or opcode = "001001")and(estado = "01" and second_int = '0') else -- xor e xori
+				 ALUOp;--pega a anterior
+
+
+		-- Banco: OK
+		read_reg1 <= reg1(2 downto 0);
+		read_reg2 <= reg2(2 downto 0);
+		write_reg <= read_reg2;
+		reg_write <= '1' when estado = "01" and (opcode = "001110" or--add
+												 opcode = "001010" or--and
+												 opcode = "000000" or--mov
+												 opcode = "000001" or--not
+												 opcode = "001000" or--or
+												 opcode = "001101" or--sub
+												 opcode = "001001" or--xor
+												 second_int = '1')else--addi,andi,xori,ori
 					'0';
 
-		
-
-		endereco_rom <= data_out_pc when estado_maquinaEstados = '0' else
-						endereco_rom;
-
-		--banco
-		read_reg1 <= reg1(2 downto 0)
-		read_reg2 <= reg2(2 downto 0)
-		
-		-- pc
+		-- PC: OK
 		wr_en_pc <= '1' when estado = "10" else 
 					'0';
 
-		ALUSrc <= '0' when estado = "10" and opcode = "000011" else -- VER Bcond
+		ALUSrc <= '0' when estado = "10" and opcode = "000011" and second_int = '0' else -- VER Bcond
 				  '1';
 
 
