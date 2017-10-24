@@ -56,7 +56,15 @@ architecture a_processador of processador is
 	component unidadeControle is
 		port( 	clk : in std_logic;
 				rst : in std_logic;
-				dadoRom : out unsigned(15 downto 0)
+				-- Instruction register
+				dado_rom : in unsigned(15 downto 0);
+				read_reg1: out unsigned (2 downto 0);
+				read_reg2: out unsigned (2 downto 0);
+				write_reg: out unsigned (2 downto 0);
+				-- Control
+				reg_write : out std_logic;
+				ALUSrc : out std_logic;
+				ALUOp: out unsigned(2 downto 0)
 		);
 	end component;
 	
@@ -90,9 +98,13 @@ architecture a_processador of processador is
 	signal bank_out1, bank_out2: unsigned(15 downto 0);
 	--signal bank_read_reg1, bank_read_reg2: unsigned(2 downto 0);
 	signal bank_write_reg : unsigned(2 downto 0);
-	--signal reg_write : std_logic;
+	signal reg_write : std_logic;
+
+	
 
 	signal ula_in1, ula_in2: unsigned(15 downto 0);
+	signal read_reg1,read_reg2: unsigned (2 downto 0);
+	signal write_reg : unsigned(2 downto 0);
 	signal ula_out: unsigned(15 downto 0);
 	signal sel_ula : unsigned(2 downto 0);
 	signal zero_ula_out : std_logic;
@@ -100,8 +112,9 @@ architecture a_processador of processador is
 	signal carry_ula_out : std_logic;
 
 	signal wr_en_pc : std_logic;
-	signal data_in_pc: unsigned(15 downto 0);
+	signal data_rom: unsigned(15 downto 0);
 	signal data_out_pc: unsigned(15 downto 0);
+	signal ALUSrc : std_logic;
 
 	begin
 		--==== Port Maps
@@ -134,14 +147,26 @@ architecture a_processador of processador is
 
 		rom_p: rom port map(clk => clk,
 							endereco=>data_out_pc,
-							dado=>data_in_pc
+							dado=>data_rom
 							);
+
+		unidadeControle_p: uc port map( clk => clk,
+										rst => rst,
+										dado_rom =>data_rom,
+										read_reg1=>read_reg1,
+										read_reg2=>read_reg1,
+										write_reg=>write_reg,
+										reg_write=>reg_write,
+										ALUSrc=>ALUSrc,
+										ALUOp=>sel_ula
+									   );
+
 		--==== Ligacoes
 
 		ula_in1 <= bank_out1;
 
 		--Mux
-		ula_in2 <= bank_out2 when sel_ula_in2 = '0' else
+		ula_in2 <= bank_out2 when ALUSrc = '0' else
 				   constante;
 
 		

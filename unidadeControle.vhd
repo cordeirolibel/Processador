@@ -38,13 +38,11 @@ architecture a_unidadeControle of unidadeControle is
 
 	--==== Sinais
 
-
 	signal estado : unsigned(1 downto 0);
 
 	signal opcode : unsigned(5 downto 0);
 	signal reg1 : unsigned(4 downto 0);
 	signal reg2 : unsigned(4 downto 0);
-	signal cte : unsigned(15 downto 0);
 
 	signal second_int : std_logic;
 	signal pre_second_int : std_logic;
@@ -60,10 +58,12 @@ architecture a_unidadeControle of unidadeControle is
 
 		--==== Ligacoes
 
-		opcode <= dado_rom(10 downto 5);
-		reg1 <= dado_rom(4 downto 0);
-		reg2 <= dado_rom(15 downto 11);
-		cte <= dado_rom;
+		opcode <= dado_rom(10 downto 5) when second_int = '0' else
+				  opcode;
+		reg1 <= dado_rom(4 downto 0)when second_int = '0' else
+				reg1;
+		reg2 <= dado_rom(15 downto 11)when second_int = '0' else
+				reg2;
 
 		-- Flags:
 		-- salva o proximo valor de second_int 
