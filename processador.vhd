@@ -4,16 +4,16 @@ use ieee.numeric_std.all;
 
 entity processador is
 	port( 	clk : in std_logic;
-			rst : in std_logic;
+			rst : in std_logic
 			--==================
 			-- Coisas para teste
-			reg_write : in std_logic;
-			constante : in unsigned(15 downto 0); --"Constante"
-			sel_ula_in2 : in std_logic;-- 0:bank->ula   1:cte->ula
-			out_ula : out unsigned(15 downto 0); --saida da ula
-			read_reg1 : in unsigned(2 downto 0); --le registrador
-			read_reg2 : in unsigned(2 downto 0); --le registrador
-			write_reg : in unsigned(2 downto 0) --Seleciona em qual registrador escreve
+			--reg_write : in std_logic;
+			--constante : in unsigned(15 downto 0); --"Constante"
+			--sel_ula_in2 : in std_logic;-- 0:bank->ula   1:cte->ula
+			--out_ula : out unsigned(15 downto 0); --saida da ula
+			--read_reg1 : in unsigned(2 downto 0); --le registrador
+			--read_reg2 : in unsigned(2 downto 0); --le registrador
+			--write_reg : in unsigned(2 downto 0) --Seleciona em qual registrador escreve
 
 	);
 end entity;
@@ -64,7 +64,8 @@ architecture a_processador of processador is
 				-- Control
 				reg_write : out std_logic;
 				ALUSrc : out std_logic;
-				ALUOp: out unsigned(2 downto 0)
+				ALUOp: out unsigned(2 downto 0);
+				wr_en_pc: out std_logic
 		);
 	end component;
 	
@@ -75,8 +76,8 @@ architecture a_processador of processador is
 		port( 	wr_en : in std_logic;
 				rst : in std_logic; ----TEM QUE TER RESET?????
 				clk : in std_logic;
-				data_in : in unsigned(15 downto 0);
-				data_out : out unsigned(15 downto 0)
+				data_in : in unsigned(6 downto 0);
+				data_out : out unsigned(6 downto 0)
 		);
 	end component;
 
@@ -99,8 +100,9 @@ architecture a_processador of processador is
 	--signal bank_read_reg1, bank_read_reg2: unsigned(2 downto 0);
 	signal bank_write_reg : unsigned(2 downto 0);
 	signal reg_write : std_logic;
-
 	
+	signal data_pc : unsigned(6 downto 0);
+	signal data_in_pc : unsigned(6 downto 0);
 
 	signal ula_in1, ula_in2: unsigned(15 downto 0);
 	signal read_reg1,read_reg2: unsigned (2 downto 0);
@@ -110,10 +112,11 @@ architecture a_processador of processador is
 	signal zero_ula_out : std_logic;
 	signal maior_ula_out : std_logic;
 	signal carry_ula_out : std_logic;
+	--signal wr_en : std_logic;
 
 	signal wr_en_pc : std_logic;
 	signal data_rom: unsigned(15 downto 0);
-	signal data_out_pc: unsigned(15 downto 0);
+	signal data_out_pc: unsigned(6 downto 0);
 	signal ALUSrc : std_logic;
 
 	begin
@@ -146,11 +149,11 @@ architecture a_processador of processador is
 						);
 
 		rom_p: rom port map(clk => clk,
-							endereco=>data_out_pc,
+							endereco=>data_pc,
 							dado=>data_rom
 							);
 
-		unidadeControle_p: uc port map( clk => clk,
+		unidadeControle_p: unidadeControle port map( clk => clk,
 										rst => rst,
 										dado_rom =>data_rom,
 										read_reg1=>read_reg1,
@@ -158,22 +161,22 @@ architecture a_processador of processador is
 										write_reg=>write_reg,
 										reg_write=>reg_write,
 										ALUSrc=>ALUSrc,
-										ALUOp=>sel_ula
+										ALUOp=>sel_ula,
+										wr_en_pc=>wr_en_pc
 									   );
 
 		--==== Ligacoes
-
-		ula_in1 <= bank_out1;
+		
+		--ula_in1 <= bank_out1;
 
 		--Mux
-		ula_in2 <= bank_out2 when ALUSrc = '0' else
-				   constante;
+		--ula_in2 <= bank_out2 when ALUSrc = '0' else
+		--		   constante;
 
-		
-		sel_ula <= "000";--soma
 
-		out_ula <= ula_out;
+		--out_ula <= ula_out;
 
 		--wr_en_pc <= '0';
+		data_out_pc <=  data_pc;
 
 end architecture;

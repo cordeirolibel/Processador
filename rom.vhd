@@ -10,7 +10,7 @@ entity rom is
 end entity;
 
 architecture a_rom of rom is
-	type mem is array (0 to 127) of unsigned(6 downto 0);
+	type mem is array (0 to 127) of unsigned(15 downto 0);
  	constant conteudo_rom : mem := (
  	-- caso endereco => conteudo
  	0  => "0001111000000000", -- ADDI 5,$r0, $r3
