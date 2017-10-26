@@ -7,12 +7,14 @@ entity unidadeControle is
 			rst : in std_logic;
 			-- Instruction register
 			dado_rom : in unsigned(15 downto 0);
+			cte : out unsigned(15 downto 0);
 			read_reg1: out unsigned (2 downto 0);
 			read_reg2: out unsigned (2 downto 0);
 			write_reg: out unsigned (2 downto 0);
 			-- Control
 			reg_write : out std_logic;
-			ALUSrc : out std_logic;
+			ALUSrcA : out std_logic;
+			ALUSrcB : out unsigned(1 downto 0);
 			ALUOp: out unsigned(2 downto 0);
 			wr_en_pc: out std_logic
 
@@ -63,10 +65,14 @@ architecture a_unidadeControle of unidadeControle is
 
 		opcode <= dado_rom(10 downto 5) when second_int = '0' else
 				  opcode;
-		reg1 <= dado_rom(4 downto 0)when second_int = '0' else
+		reg1 <= "00000" when opcode="000011" and second_int = '0' else--for jmp
+				dado_rom(4 downto 0) when second_int = '0' else
 				reg1;
-		reg2 <= dado_rom(15 downto 11)when second_int = '0' else
+		reg2 <= dado_rom(4 downto 0) when opcode="000011" and second_int = '0' else --for jmp
+				dado_rom(15 downto 11)when second_int = '0' else
 				reg2;
+		cte <= dado_rom when second_int = '1' else
+			   "0000000000000000";
 
 		-- Flags:
 		-- salva o proximo valor de second_int 
@@ -75,10 +81,13 @@ architecture a_unidadeControle of unidadeControle is
 							 opcode = "110110" or--andi
 							 opcode = "110100" or--ori
 							 opcode = "110101" )else--xori
-					  	'0';
+					  	  '0' when estado = "10" else
+					  	  '0' when rst='1'else
+					  	  pre_second_int;
 
 		-- muda somente no estado 00
 		second_int <= pre_second_int when estado = "00" else
+					  '0' when rst='1'else
 					  second_int;
 
 
@@ -123,8 +132,16 @@ architecture a_unidadeControle of unidadeControle is
 		wr_en_pc <= '1' when estado = "10" else 
 					'0';
 
-		ALUSrc <= '0' when estado = "10" and opcode = "000011" and second_int = '0' else -- VER Bcond
-				  '1';
+		ALUSrcA <= '1' when estado = "10" and opcode = "000011" else
+				   '0' when estado = "10" else
+				   '1';
+
+		ALUSrcB <= "00" when estado = "10" and opcode = "000011" and second_int = '0' else -- jmp
+				   "11" when estado = "01" and opcode = "000000" and second_int = '0' else -- mov
+				   "10" when estado = "01" and second_int = '1' else --cte
+				   "00" when estado = "01" and second_int = '0' else --reg
+
+				   "01"; -- soma 1 pc
 
 
 end architecture;
