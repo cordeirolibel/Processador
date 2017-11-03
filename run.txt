@@ -5,7 +5,8 @@ ghdl -a porta.vhd
 ghdl -e porta
 
 ghdl -a porta_tb.vhd
-ghdl -e porta_tb
+ghdl -e porta_tb
+
 
 ghdl -r porta_tb --wave=porta_tb.ghw
 ghdl -r min_up_tb --stop-time=3000ns --wave=porta.ghw 
@@ -18,6 +19,8 @@ gtkwave porta_tb.ghw
 
 ghdl -a reg16bits.vhd
 ghdl -e reg16bits
+ghdl -a reg3bits.vhd
+ghdl -e reg3bits
 ghdl -a reg1bit.vhd
 ghdl -e reg1bit
 ghdl -a bank8reg.vhd
@@ -36,8 +39,7 @@ ghdl -a processador.vhd
 ghdl -e processador
 
 ghdl -a processador_tb.vhd
-ghdl -e processador_tb
-
+ghdl -e processador_tb
 ghdl -r processador_tb --stop-time=50000ns --wave=processador_tb.ghw 
 
 gtkwave processador_tb.ghw -awaves.gtkw
