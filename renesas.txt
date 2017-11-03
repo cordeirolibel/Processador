@@ -15,7 +15,7 @@ i 	1-bit immediate data
 cccc 	4-bit data that shows the condition codes
 
 =======================================================================================
-	0
+	
         
 Instruction	   	Opcode			Operation
 ADD reg1,reg2 		rrrrr001110RRRRR 	GR[reg2]<-GR[reg2]+GR[reg1] 
@@ -36,6 +36,8 @@ SUB reg1,reg2 		rrrrr001101RRRRR 	GR[reg2]<-GR[reg2]–GR[reg1]
 XOR reg1,reg2 		rrrrr001001RRRRR 	GR[reg2]<-GR[reg2] XOR GR[reg1] 
 XORI imm16,reg1,reg2 	rrrrr110101RRRRR	GR[reg2]<-GR[reg1] XOR zero-extend (imm16) 
 			iiiiiiiiiiiiiiii
+SST.H  			rrrrr1001ddddddd	adr?ep+zero-extend(disp8)  Store-memory(adr,GR[reg2],Halfword)
+SLD.H  			rrrrr1000ddddddd	adr?ep+zero-extend(disp8)  GR[reg2]?sign-extend(Load-memory(adr,Halfword)) 
 
 [1] dddddddd: Higher 8 bits of disp9. 
 

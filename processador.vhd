@@ -4,7 +4,12 @@ use ieee.numeric_std.all;
 
 entity processador is
 	port( 	clk : in std_logic;
-			rst : in std_logic
+			rst : in std_logic; 
+			pcsaida : out unsigned(6 downto 0);
+			instrucao : out unsigned(15 downto 0);
+			reg1 : out unsigned(15 downto 0);
+			reg2 : out unsigned(15 downto 0);
+			saidaULA : out unsigned(15 downto 0)
 			--==================
 			-- Coisas para teste
 			--reg_write : in std_logic;
@@ -183,6 +188,12 @@ architecture a_processador of processador is
 				cte when ALUSrcB = "10" else--cte
 				"0000000000000000"; -- mov
 				   
+
+		pcsaida <=data_out_pc;
+		instrucao <=data_rom;
+		reg1 <= bank_out1;
+		reg2 <=bank_out2;
+		saidaULA <=ula_out;
 
 		--Mux
 		--ula_in2 <= bank_out2 when ALUSrc = '0' else
