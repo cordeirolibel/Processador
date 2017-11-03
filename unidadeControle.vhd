@@ -35,11 +35,30 @@ architecture a_unidadeControle of unidadeControle is
 		);
 	end component;
 
+	component reg16bits is
+		port( 	clk : in std_logic;
+				rst : in std_logic;
+				wr_en : in std_logic;
+				data_in : in unsigned(15 downto 0);
+				data_out : out unsigned(15 downto 0)
+		);
+	end component;
+
+	component reg1bit is
+		port( 	clk : in std_logic;
+			rst : in std_logic;
+			wr_en : in std_logic;
+			data_in : in std_logic;
+			data_out : out std_logic
+		);
+	end component;
+
 	--==================================================
 	--==== Ligacoes
 	--==================================================
 
 	--==== Sinais
+	signal dado_rom_ant_s: unsigned(15 downto 0);
 
 	signal estado : unsigned(1 downto 0);
 
@@ -48,9 +67,13 @@ architecture a_unidadeControle of unidadeControle is
 	signal reg2 : unsigned(4 downto 0);
 
 	signal second_int : std_logic;
+	signal second_int_ant_s : std_logic;
 	signal pre_second_int : std_logic;
+	signal pre_second_int_ant_s : std_logic;
 	
 	signal aluopbuffer : unsigned(2 downto 0);
+
+	signal reg_write_s: std_logic;
 
 	begin
 		--==== Port Maps
@@ -61,16 +84,40 @@ architecture a_unidadeControle of unidadeControle is
 													estado => estado
 												);
 
+		dado_rom_ant: reg16bits port map(	clk=>clk,
+											rst=>rst,
+											wr_en=>reg_write_s,
+											data_in=>dado_rom,
+											data_out=>dado_rom_ant_s
+										);
+
+		second_int_ant: reg1bit port map(	clk=>clk,
+											rst=>rst,
+											wr_en=>reg_write_s,
+											data_in=>second_int,
+											data_out=>second_int_ant_s
+										);
+
+		pre_second_int_ant: reg1bit port map(	clk=>clk,
+												rst=>rst,
+												wr_en=>reg_write_s,
+												data_in=>pre_second_int,
+												data_out=>second_int_ant_s
+											);
+
 		--==== Ligacoes
 
 		opcode <= dado_rom(10 downto 5) when second_int = '0' else
-				  opcode;
+				  dado_rom_ant_s(10 downto 5);
+
 		reg1 <= "00000" when opcode="000011" and second_int = '0' else--for jmp
 				dado_rom(4 downto 0) when second_int = '0' else
-				reg1;
+				dado_rom_ant_s(4 downto 0);
+
 		reg2 <= dado_rom(4 downto 0) when opcode="000011" and second_int = '0' else --for jmp
 				dado_rom(15 downto 11)when second_int = '0' else
-				reg2;
+				dado_rom_ant_s(15 downto 11);
+
 		cte <= dado_rom when second_int = '1' else
 			   "0000000000000000";
 
@@ -83,12 +130,12 @@ architecture a_unidadeControle of unidadeControle is
 							 opcode = "110101" )else--xori
 					  	  '0' when estado = "10" else
 					  	  '0' when rst='1'else
-					  	  pre_second_int;
+					  	  pre_second_int_ant_s;
 
 		-- muda somente no estado 00
 		second_int <= pre_second_int when estado = "00" else
 					  '0' when rst='1'else
-					  second_int;
+					  second_int_ant_s;
 
 
 		-- ULA: OK
@@ -143,5 +190,9 @@ architecture a_unidadeControle of unidadeControle is
 
 				   "01"; -- soma 1 pc
 
+		-- Regs: OK
 
+		reg_write_s <= '1' when estado = "10" else
+					 '0';
+					 
 end architecture;

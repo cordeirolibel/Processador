@@ -10,16 +10,6 @@ entity processador is
 			reg1 : out unsigned(15 downto 0);
 			reg2 : out unsigned(15 downto 0);
 			saidaULA : out unsigned(15 downto 0)
-			--==================
-			-- Coisas para teste
-			--reg_write : in std_logic;
-			--constante : in unsigned(15 downto 0); --"Constante"
-			--sel_ula_in2 : in std_logic;-- 0:bank->ula   1:cte->ula
-			--out_ula : out unsigned(15 downto 0); --saida da ula
-			--read_reg1 : in unsigned(2 downto 0); --le registrador
-			--read_reg2 : in unsigned(2 downto 0); --le registrador
-			--write_reg : in unsigned(2 downto 0) --Seleciona em qual registrador escreve
-
 	);
 end entity;
 
@@ -82,7 +72,7 @@ architecture a_processador of processador is
 
 	component pc is
 		port( 	wr_en : in std_logic;
-				rst : in std_logic; ----TEM QUE TER RESET?????
+				rst : in std_logic;
 				clk : in std_logic;
 				data_in : in unsigned(6 downto 0);
 				data_out : out unsigned(6 downto 0)
@@ -105,7 +95,6 @@ architecture a_processador of processador is
 	--==== Sinais
 
 	signal bank_out1, bank_out2: unsigned(15 downto 0);
-	--signal bank_read_reg1, bank_read_reg2: unsigned(2 downto 0);
 	signal bank_write_reg : unsigned(2 downto 0);
 	signal reg_write : std_logic;
 	
@@ -195,14 +184,6 @@ architecture a_processador of processador is
 		reg2 <=bank_out2;
 		saidaULA <=ula_out;
 
-		--Mux
-		--ula_in2 <= bank_out2 when ALUSrc = '0' else
-		--		   constante;
-
-
-		--out_ula <= ula_out;
-
-		--wr_en_pc <= '0';
 		data_in_pc <= ula_out(6 downto 0);
 
 end architecture;

@@ -1,0 +1,43 @@
+=========================================================
+====> Comandos Basicos
+=========================================================
+ghdl -a porta.vhd
+ghdl -e porta
+
+ghdl -a porta_tb.vhd
+ghdl -e porta_tb
+
+ghdl -r porta_tb --wave=porta_tb.ghw
+ghdl -r min_up_tb --stop-time=3000ns --wave=porta.ghw 
+
+gtkwave porta_tb.ghw 
+
+=========================================================
+====> Comandos Padrão
+=========================================================
+
+ghdl -a reg16bits.vhd
+ghdl -e reg16bits
+ghdl -a reg1bit.vhd
+ghdl -e reg1bit
+ghdl -a bank8reg.vhd
+ghdl -e bank8reg
+ghdl -a pc.vhd
+ghdl -e pc
+ghdl -a maquinaEstados.vhd
+ghdl -e maquinaEstados
+ghdl -a rom.vhd
+ghdl -e rom
+ghdl -a ula.vhd
+ghdl -e ula
+ghdl -a unidadeControle.vhd
+ghdl -e unidadeControle
+ghdl -a processador.vhd
+ghdl -e processador
+
+ghdl -a processador_tb.vhd
+ghdl -e processador_tb
+
+ghdl -r processador_tb --stop-time=50000ns --wave=processador_tb.ghw 
+
+gtkwave processador_tb.ghw -awaves.gtkw
