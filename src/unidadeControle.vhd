@@ -5,6 +5,8 @@ use ieee.numeric_std.all;
 entity unidadeControle is
 	port( 	clk : in std_logic;
 			rst : in std_logic;
+			zero : in std_logic;
+			maior : in std_logic;
 			-- Instruction register
 			dado_rom : in unsigned(15 downto 0);
 			cte : out unsigned(15 downto 0);
@@ -84,6 +86,15 @@ architecture a_unidadeControle of unidadeControle is
 	signal ALUOp_s : unsigned(2 downto 0);
 
 	signal reg_write_s: std_logic;
+	signal reg_write_zero_s: std_logic;
+
+	signal disp_Bcond: unsigned(7 downto 0);
+	signal cccc_Bcond: unsigned(3 downto 0);
+
+	signal zero_ant : std_logic;
+	signal maior_ant : std_logic;
+	signal Bcond : std_logic;
+
 
 	begin
 		--==== Port Maps
@@ -115,6 +126,20 @@ architecture a_unidadeControle of unidadeControle is
 												data_out=>pre_second_int_ant
 											);
 
+		zero_ant_p: reg1bit port map(	clk=>clk,
+										rst=>rst,
+										wr_en=>reg_write_zero_s,
+										data_in=>zero,
+										data_out=>zero_ant
+									);
+
+		maior_ant_p: reg1bit port map(	clk=>clk,
+										rst=>rst,
+										wr_en=>reg_write_zero_s,
+										data_in=>maior,
+										data_out=>maior_ant
+									);
+
 		ALUOp_ant_p: reg3bits port map(	clk=>clk,
 										rst=>rst,
 										wr_en=>reg_write_s,
@@ -136,10 +161,12 @@ architecture a_unidadeControle of unidadeControle is
 				dado_rom_ant(15 downto 11);
 
 		cte <= dado_rom;
-		--cte <= dado_rom when second_int = '1' else
-		--	   "0000000000000000";
+		
+		disp_Bcond <= dado_rom(15 downto 11)&dado_rom(6 downto 4);
+		cccc_Bcond <= dado_rom(3 downto 0);
 
 		-- Flags:
+
 		-- salva o proximo valor de second_int 
 		pre_second_int <= '1' when estado = "10" and second_int = '0' and
 							(opcode = "110000" or--addi
@@ -154,6 +181,14 @@ architecture a_unidadeControle of unidadeControle is
 		second_int <= pre_second_int when estado = "00" else
 					  '0' when rst='1'else
 					  second_int_ant;
+
+		Bcond <= '1' when opcode(5 downto 2) = "1011" and second_int = '0' and estado = "01" and(
+						  (cccc_Bcond = "0010" and zero_ant = '1') or  -- pula se zero = 1
+						  (cccc_Bcond = "1010" and zero_ant = '0') or  -- pula se zero = 0
+						  (cccc_Bcond = "1011" and maior_ant = '1') or -- pula se maior = 1
+						  (cccc_Bcond = "0011" and maior_ant = '0')) else-- pula se maior = 0
+				 '1' when estado = "10" and Bcond = '1' else -- mantem no estado de atualizacao do pc
+				 '0';
 
 		-- ULA: OK
 
@@ -202,5 +237,8 @@ architecture a_unidadeControle of unidadeControle is
 
 		reg_write_s <= '1' when estado = "10" else
 					 '0';
+
+		reg_write_zero_s <= '1' when estado = "01" else
+					 		'0';
 					 
 end architecture;

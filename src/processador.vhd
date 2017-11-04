@@ -51,6 +51,8 @@ architecture a_processador of processador is
 	component unidadeControle is
 		port( 	clk : in std_logic;
 				rst : in std_logic;
+				zero : in std_logic;
+				maior : in std_logic;
 				-- Instruction register
 				dado_rom : in unsigned(15 downto 0);
 				read_reg1: out unsigned (2 downto 0);
@@ -155,6 +157,8 @@ architecture a_processador of processador is
 
 		unidadeControle_p: unidadeControle port map( clk => clk,
 											rst => rst,
+											zero => zero_ula_out,
+											maior => maior_ula_out,
 											dado_rom =>data_rom,
 											read_reg1=>read_reg1,
 											read_reg2=>read_reg2,

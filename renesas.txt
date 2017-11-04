@@ -2,78 +2,101 @@
 ======================================= Renesas ======================================= 
 =======================================================================================
 
+
 https://www.renesas.com/en-us/media/products/software-tools/boards-and-kits/renesas-demonstration-kits/v850es-jx3l-lpd/U18953EJ5V0UD00.pdf
 Pag 1052 - APPENDIX D INSTRUCTION SET LIST 
 
+
 =======================================================================================
+
 
 Register Symbol Explanation
-R 	1-bit data of a code that specifies reg1 
-r 	1-bit data of the code that specifies reg2
-d 	1-bit displacement data
-i 	1-bit immediate data
-cccc 	4-bit data that shows the condition codes
+R       1-bit data of a code that specifies reg1 
+r       1-bit data of the code that specifies reg2
+d       1-bit displacement data
+i       1-bit immediate data
+cccc    4-bit data that shows the condition codes
+
 
 =======================================================================================
-	
-        
-Instruction	   	Opcode			Operation
-ADD reg1,reg2 		rrrrr001110RRRRR 	GR[reg2]<-GR[reg2]+GR[reg1] 
-ADDI imm16,reg1,reg2 	rrrrr110000RRRRR	GR[reg2]<-GR[reg1]+sign-extend(imm16)
-			iiiiiiiiiiiiiiii
-AND reg1,reg2 		rrrrr001010RRRRR 	GR[reg2]<-GR[reg2]AND GR[reg1] 
-ANDI imm16,reg1,reg2 	rrrrr110110RRRRR	GR[reg2]<-GR[reg1]AND zero-extend(imm16)
-			iiiiiiiiiiiiiiii	
-Bcond disp9 		ddddd1011dddcccc [1]	if conditions are satisfied then PC<-PC+sign-extend(disp9) 
-JMP [reg1] 		00000000011RRRRR 	PC<-GR[reg1] 
-MOV reg1,reg2 		rrrrr000000RRRRR 	GR[reg2]<-GR[reg1] 
-NOP 			0000000000000000 	Pass at least one clock cycle doing nothing. MOV R0, R0
-NOT reg1,reg2 		rrrrr000001RRRRR 	GR[reg2]<-NOT(GR[reg1]) 
-OR reg1,reg2 		rrrrr001000RRRRR 	GR[reg2]<-GR[reg2]OR GR[reg1]
-ORI imm16,reg1,reg2 	rrrrr110100RRRRR	GR[reg2]<-GR[reg1]OR zero-extend(imm16) 
-			iiiiiiiiiiiiiiii
-SUB reg1,reg2 		rrrrr001101RRRRR 	GR[reg2]<-GR[reg2]–GR[reg1] 
-XOR reg1,reg2 		rrrrr001001RRRRR 	GR[reg2]<-GR[reg2] XOR GR[reg1] 
-XORI imm16,reg1,reg2 	rrrrr110101RRRRR	GR[reg2]<-GR[reg1] XOR zero-extend (imm16) 
-			iiiiiiiiiiiiiiii
-SST.H  			rrrrr1001ddddddd	adr?ep+zero-extend(disp8)  Store-memory(adr,GR[reg2],Halfword)
-SLD.H  			rrrrr1000ddddddd	adr?ep+zero-extend(disp8)  GR[reg2]?sign-extend(Load-memory(adr,Halfword)) 
+		
+		
+Instruction             Opcode                  Operation
+ADD reg1,reg2           rrrrr001110RRRRR        GR[reg2]<-GR[reg2]+GR[reg1] 
+ADDI imm16,reg1,reg2    rrrrr110000RRRRR        GR[reg2]<-GR[reg1]+sign-extend(imm16)
+						iiiiiiiiiiiiiiii
+AND reg1,reg2           rrrrr001010RRRRR        GR[reg2]<-GR[reg2]AND GR[reg1] 
+ANDI imm16,reg1,reg2    rrrrr110110RRRRR        GR[reg2]<-GR[reg1]AND zero-extend(imm16)
+						iiiiiiiiiiiiiiii        
+Bcond disp8             ddddd1011dddcccc        if conditions are satisfied then PC<-PC+sign-extend(disp8) 
+JMP [reg1]              00000000011RRRRR        PC<-GR[reg1] 
+MOV reg1,reg2           rrrrr000000RRRRR        GR[reg2]<-GR[reg1] 
+NOP                     0000000000000000        Pass at least one clock cycle doing nothing. MOV R0, R0
+NOT reg1,reg2           rrrrr000001RRRRR        GR[reg2]<-NOT(GR[reg1]) 
+OR reg1,reg2            rrrrr001000RRRRR        GR[reg2]<-GR[reg2]OR GR[reg1]
+ORI imm16,reg1,reg2     rrrrr110100RRRRR        GR[reg2]<-GR[reg1]OR zero-extend(imm16) 
+						iiiiiiiiiiiiiiii
+SUB reg1,reg2           rrrrr001101RRRRR        GR[reg2]<-GR[reg2]–GR[reg1] 
+XOR reg1,reg2           rrrrr001001RRRRR        GR[reg2]<-GR[reg2] XOR GR[reg1] 
+XORI imm16,reg1,reg2    rrrrr110101RRRRR        GR[reg2]<-GR[reg1] XOR zero-extend (imm16) 
+						iiiiiiiiiiiiiiii
+SST.H                   rrrrr1001ddddddd        adr<-ep+zero-extend(disp8)  Store-memory(adr,GR[reg2],Halfword)
+SLD.H                   rrrrr1000ddddddd        adr<-ep+zero-extend(disp8)  GR[reg2]<-sign-extend(Load-memory(adr,Halfword)) 
 
-[1] dddddddd: Higher 8 bits of disp9. 
 
 =======================================================================================
 
-Codigo:
 
- 	0  => "0001111000000000", -- ADDI 5,$r0, $r3
-	1  => "0000000000000101", -- cte 5
-	2  => "0010011000000000", -- ADDI 8,$r0, $r4
-	3  => "0000000000001000", -- cte 8
-	4  => "0001100111000100", -- ADD $r4, $r3
-	5  => "0010100000000011", -- MOV $r3, $r5
-	6  => "0010111000000101", -- ADDI -1, $r5,$r5
-	7  => "1111111111111111", -- cte -1
-	8  => "0011011000000000", -- ADDI 20,$r0, $r6
-	9  => "0000000000010100", -- cte 20
-	10 => "0000000001100110", -- JMP r6
-	11 => "0000000000000000", -- nop
-	12 => "0000000000000000", -- nop
-	13 => "0000000000000000", -- nop
-	14 => "0000000000000000", -- nop
-	15 => "0000000000000000", -- nop
-	16 => "0000000000000000", -- nop
-	17 => "0000000000000000", -- nop
-	18 => "0000000000000000", -- nop
-	19 => "0000000000000000", -- nop
-	20 => "0001100000000101", -- MOV $r5, $r3
-	21 => "0011011000000000", -- ADDI 4,$r0, $r6
-	22 => "0000000000000100", -- cte 4
-	23 => "0000000001100110", -- JMP r6
-	24 => "0000000000000000", -- nop
+Condition code 		Condition Formula		Explanation 
+cccc
+0011 				(CY or Z) = 1 			Not higher (Less than or equal)
+1011 				(CY or Z) = 0 			Higher (Greater than) 
+0010				Z=1						Zero
+1010				Z=0						Not zero
 
 
+=======================================================================================
+	======= Calculadora Programavel =======
 
+	 	0  => "0001111000000000", -- ADDI 5,$r0, $r3
+		1  => "0000000000000101", -- cte 5
+		2  => "0010011000000000", -- ADDI 8,$r0, $r4
+		3  => "0000000000001000", -- cte 8
+		4  => "0001100111000100", -- ADD $r4, $r3
+		5  => "0010100000000011", -- MOV $r3, $r5
+		6  => "0010111000000101", -- ADDI -1, $r5,$r5
+		7  => "1111111111111111", -- cte -1
+		8  => "0011011000000000", -- ADDI 20,$r0, $r6
+		9  => "0000000000010100", -- cte 20
+		10 => "0000000001100110", -- JMP r6
+		11 => "0000000000000000", -- nop
+		12 => "0000000000000000", -- nop
+		13 => "0000000000000000", -- nop
+		14 => "0000000000000000", -- nop
+		15 => "0000000000000000", -- nop
+		16 => "0000000000000000", -- nop
+		17 => "0000000000000000", -- nop
+		18 => "0000000000000000", -- nop
+		19 => "0000000000000000", -- nop
+		20 => "0001100000000101", -- MOV $r5, $r3
+		21 => "0011011000000000", -- ADDI 4,$r0, $r6
+		22 => "0000000000000100", -- cte 4
+		23 => "0000000001100110", -- JMP r6
 
+=======================================================================================
+	======= Condicionais e Desvios =======
+
+		0  => "0001011000000000", -- ADDI 30,$r0,$r2
+		1  => "0000000000011110", -- cte 30
+		2  => "0001100111000000", -- ADD $r0, $r3
+		3  => "0010000111000000", -- ADD $r0, $r4
+		4  => "0010000111000011", -- ADD $r3, $r4
+		5  => "0001111000000011", -- ADDI 1, $r3,$r3
+		6  => "0000000000000001", -- cte 1
+		7  => "0000100000000011", -- MOV $r3,$r1
+		8  => "0000100110100010", -- SUB $r2,$r1
+		9  => "1111110110101011", -- BZero -6 	#-6 = 11111010
+		10 => "0010100000000100", -- MOV $r4,$r5
 
 
  

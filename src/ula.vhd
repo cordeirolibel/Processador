@@ -39,7 +39,7 @@ architecture a_ula of ula is
 		-- por equando nada de carry
 		saida <= saida17(15 downto 0);
 
-		maior <= '1' when (entrA>entrB)and(sel="010") else
+		maior <= '1' when (entrA>entrB)and(sel="010" or sel="001") else -- maior ou sub
 				 '0' ;
 		
 		zero <= '1' when entrA17-entrB17 = "00000000000000000" 
