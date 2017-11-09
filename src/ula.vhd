@@ -8,7 +8,6 @@ entity ula is
 			sel : in unsigned(2 downto 0); -- bits de seleção num só bus
 			saida : out unsigned(15 downto 0);
 			zero: out std_logic;
-			maior: out std_logic;
 			carry: out std_logic
 	);
 end entity;
@@ -25,7 +24,7 @@ architecture a_ula of ula is
 
 		saida17 <=	entrA17+entrB17		when sel="000" else -- Soma
 					entrA17-entrB17		when sel="001" else -- Subtracao
-					entrA17				when sel="010" else -- maior 
+					entrA17				when sel="010" else --  
 					entrA17 and entrB17 when sel="011" else -- and
 					entrA17 or entrB17 	when sel="100" else -- or 
 					not entrA17 		when sel="101" else -- not A
@@ -39,8 +38,6 @@ architecture a_ula of ula is
 		-- por equando nada de carry
 		saida <= saida17(15 downto 0);
 
-		maior <= '1' when (entrA>entrB)and(sel="010" or sel="001") else -- maior ou sub
-				 '0' ;
 		
 		zero <= '1' when entrA17-entrB17 = "00000000000000000" 
 						 and sel="001" else

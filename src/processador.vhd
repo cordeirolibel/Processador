@@ -26,7 +26,6 @@ architecture a_processador of processador is
 				sel : in unsigned(2 downto 0); -- bits de seleção num só bus
 				saida : out unsigned(15 downto 0);
 				zero: out std_logic;
-				maior: out std_logic;
 				carry: out std_logic
 		);
 	end component;
@@ -52,7 +51,7 @@ architecture a_processador of processador is
 		port( 	clk : in std_logic;
 				rst : in std_logic;
 				zero : in std_logic;
-				maior : in std_logic;
+				carry : in std_logic;
 				-- Instruction register
 				dado_rom : in unsigned(15 downto 0);
 				read_reg1: out unsigned (2 downto 0);
@@ -111,7 +110,6 @@ architecture a_processador of processador is
 	signal ula_out: unsigned(15 downto 0);
 	signal sel_ula : unsigned(2 downto 0);
 	signal zero_ula_out : std_logic;
-	signal maior_ula_out : std_logic;
 	signal carry_ula_out : std_logic;
 	--signal wr_en : std_logic;
 
@@ -139,7 +137,6 @@ architecture a_processador of processador is
 								sel=>sel_ula,
 								saida => ula_out,
 								zero=>zero_ula_out,
-								maior=>maior_ula_out,
 								carry=>carry_ula_out
 								);
 
@@ -158,7 +155,7 @@ architecture a_processador of processador is
 		unidadeControle_p: unidadeControle port map( clk => clk,
 											rst => rst,
 											zero => zero_ula_out,
-											maior => maior_ula_out,
+											carry => carry_ula_out;
 											dado_rom =>data_rom,
 											read_reg1=>read_reg1,
 											read_reg2=>read_reg2,
@@ -178,7 +175,7 @@ architecture a_processador of processador is
 
 		ula_in2 <= bank_out2	 when ALUSrcB = "00" else
 				"0000000000000001" when ALUSrcB = "01" else--proxima instrucao
-				cte when ALUSrcB = "10" else--cte
+				cte when ALUSrcB = "10" else--cte ou Bcond
 				"0000000000000000"; -- mov
 				   
 

@@ -6,7 +6,7 @@ entity unidadeControle is
 	port( 	clk : in std_logic;
 			rst : in std_logic;
 			zero : in std_logic;
-			maior : in std_logic;
+			carry: in std_logic;
 			-- Instruction register
 			dado_rom : in unsigned(15 downto 0);
 			cte : out unsigned(15 downto 0);
@@ -88,11 +88,10 @@ architecture a_unidadeControle of unidadeControle is
 	signal reg_write_s: std_logic;
 	signal reg_write_zero_s: std_logic;
 
-	signal disp_Bcond: unsigned(7 downto 0);
 	signal cccc_Bcond: unsigned(3 downto 0);
 
 	signal zero_ant : std_logic;
-	signal maior_ant : std_logic;
+	signal carry_ant : std_logic;
 	signal Bcond : std_logic;
 
 
@@ -129,15 +128,15 @@ architecture a_unidadeControle of unidadeControle is
 		zero_ant_p: reg1bit port map(	clk=>clk,
 										rst=>rst,
 										wr_en=>reg_write_zero_s,
-										data_in=>zero,
+										data_in=>zero_s,
 										data_out=>zero_ant
 									);
 
-		maior_ant_p: reg1bit port map(	clk=>clk,
+		carry_ant_p: reg1bit port map(	clk=>clk,
 										rst=>rst,
-										wr_en=>reg_write_zero_s,
-										data_in=>maior,
-										data_out=>maior_ant
+										wr_en=>reg_write_carry_s,
+										data_in=>carry_s,
+										data_out=>carry_ant
 									);
 
 		ALUOp_ant_p: reg3bits port map(	clk=>clk,
@@ -164,7 +163,7 @@ architecture a_unidadeControle of unidadeControle is
 				"11111111"&dado_rom(15 downto 11)&dado_rom(6 downto 4) when Bcond = '1' and dado_rom(15) = '1' else
 				dado_rom;
 		
-		disp_Bcond <= dado_rom(15 downto 11)&dado_rom(6 downto 4);
+
 		cccc_Bcond <= dado_rom(3 downto 0);
 
 		-- Flags:
@@ -186,9 +185,7 @@ architecture a_unidadeControle of unidadeControle is
 
 		Bcond <= '1' when opcode(5 downto 2) = "1011" and second_int = '0' and estado = "01" and(
 						  (cccc_Bcond = "0010" and zero_ant = '1') or  -- pula se zero = 1
-						  (cccc_Bcond = "1010" and zero_ant = '0') or  -- pula se zero = 0
-						  (cccc_Bcond = "1011" and maior_ant = '1') or -- pula se maior = 1
-						  (cccc_Bcond = "0011" and maior_ant = '0')) else-- pula se maior = 0
+						  (cccc_Bcond = "1011" and (zero_ant or carry_ant = '1')) or -- pula se maior = 1
 				 '1' when estado = "10" and Bcond = '1' else -- mantem no estado de atualizacao do pc
 				 '0';
 
@@ -240,7 +237,15 @@ architecture a_unidadeControle of unidadeControle is
 		reg_write_s <= '1' when estado = "10" else
 					 '0';
 
-		reg_write_zero_s <= '1' when estado = "01" else
+		reg_write_zero_s <= '1' when estado = "01" and
+									(opcode = "00" or
+									 opcode = "00" or
+									 opcode = "00")	else
 					 		'0';
+		reg_write_carry_s  <= '1' when estado = "01" and
+									  (opcode = "00" or
+									   opcode = "00" or
+									   opcode = "00") else
+					 		  '0';
 					 
 end architecture;
