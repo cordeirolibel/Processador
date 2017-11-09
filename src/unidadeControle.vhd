@@ -160,7 +160,9 @@ architecture a_unidadeControle of unidadeControle is
 				dado_rom(15 downto 11)when second_int = '0' else
 				dado_rom_ant(15 downto 11);
 
-		cte <= dado_rom;
+		cte <= 	"00000000"&dado_rom(15 downto 11)&dado_rom(6 downto 4) when Bcond = '1' and dado_rom(15) = '0' else
+				"11111111"&dado_rom(15 downto 11)&dado_rom(6 downto 4) when Bcond = '1' and dado_rom(15) = '1' else
+				dado_rom;
 		
 		disp_Bcond <= dado_rom(15 downto 11)&dado_rom(6 downto 4);
 		cccc_Bcond <= dado_rom(3 downto 0);
@@ -230,7 +232,7 @@ architecture a_unidadeControle of unidadeControle is
 				   "11" when estado = "01" and opcode = "000000" and second_int = '0' else -- mov
 				   "10" when estado = "01" and second_int = '1' else --cte
 				   "00" when estado = "01" and second_int = '0' else --reg
-
+				   "10" when estado = "10" and Bcond ='1' else -- branch
 				   "01"; -- soma 1 pc
 
 		-- Regs: OK
