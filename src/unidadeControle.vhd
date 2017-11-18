@@ -87,6 +87,8 @@ architecture a_unidadeControle of unidadeControle is
 
 	signal reg_write_s: std_logic;
 	signal reg_write_zero_s: std_logic;
+	signal reg_write_carry_s: std_logic;
+
 
 	signal cccc_Bcond: unsigned(3 downto 0);
 
@@ -128,14 +130,14 @@ architecture a_unidadeControle of unidadeControle is
 		zero_ant_p: reg1bit port map(	clk=>clk,
 										rst=>rst,
 										wr_en=>reg_write_zero_s,
-										data_in=>zero_s,
+										data_in=>zero,
 										data_out=>zero_ant
 									);
 
 		carry_ant_p: reg1bit port map(	clk=>clk,
 										rst=>rst,
 										wr_en=>reg_write_carry_s,
-										data_in=>carry_s,
+										data_in=>carry,
 										data_out=>carry_ant
 									);
 
@@ -185,7 +187,7 @@ architecture a_unidadeControle of unidadeControle is
 
 		Bcond <= '1' when opcode(5 downto 2) = "1011" and second_int = '0' and estado = "01" and(
 						  (cccc_Bcond = "0010" and zero_ant = '1') or  -- pula se zero = 1
-						  (cccc_Bcond = "1011" and (zero_ant or carry_ant = '1')) or -- pula se maior = 1
+						  (cccc_Bcond = "1011" and (zero_ant = '0' and carry_ant = '0'))) else -- pula se maior = 1
 				 '1' when estado = "10" and Bcond = '1' else -- mantem no estado de atualizacao do pc
 				 '0';
 
@@ -237,15 +239,25 @@ architecture a_unidadeControle of unidadeControle is
 		reg_write_s <= '1' when estado = "10" else
 					 '0';
 
-		reg_write_zero_s <= '1' when estado = "01" and
-									(opcode = "00" or
-									 opcode = "00" or
-									 opcode = "00")	else
+		reg_write_zero_s <= '1' when estado = "01" and 
+									(opcode = "001110" or --add
+									 opcode = "110000" or --addi
+									 opcode = "001010" or --and
+									 opcode = "110110" or --andi
+									 opcode = "000001" or --not
+									 opcode = "001000" or --or
+									 opcode = "110100" or --ori
+									 opcode = "001101" or --sub
+									 opcode = "001001" or --xor
+									 opcode = "110101"    --xori
+									 )	else
 					 		'0';
-		reg_write_carry_s  <= '1' when estado = "01" and
-									  (opcode = "00" or
-									   opcode = "00" or
-									   opcode = "00") else
+
+		reg_write_carry_s  <= '1' when estado = "01" and 
+									  (opcode = "001110" or --add
+									   opcode = "110000" or --addi
+									   opcode = "001101"    --sub
+									 )	else
 					 		  '0';
 					 
 end architecture;

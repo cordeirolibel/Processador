@@ -155,7 +155,7 @@ architecture a_processador of processador is
 		unidadeControle_p: unidadeControle port map( clk => clk,
 											rst => rst,
 											zero => zero_ula_out,
-											carry => carry_ula_out;
+											carry => carry_ula_out,
 											dado_rom =>data_rom,
 											read_reg1=>read_reg1,
 											read_reg2=>read_reg2,
