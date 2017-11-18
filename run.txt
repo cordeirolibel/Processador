@@ -33,6 +33,8 @@ ghdl -a rom.vhd
 ghdl -e rom
 ghdl -a ula.vhd
 ghdl -e ula
+ghdl -a ram.vhd
+ghdl -e ram
 ghdl -a unidadeControle.vhd
 ghdl -e unidadeControle
 ghdl -a processador.vhd

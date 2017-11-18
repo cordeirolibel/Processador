@@ -64,7 +64,9 @@ architecture a_processador of processador is
 				ALUSrcA : out std_logic;
 				ALUSrcB : out unsigned(1 downto 0);
 				ALUOp: out unsigned(2 downto 0);
-				wr_en_pc: out std_logic
+				wr_en_pc: out std_logic;
+				wr_en_ram: out std_logic;
+				write_bank_sel : out std_logic --0:ram  1:ula
 		);
 	end component;
 	
@@ -89,6 +91,17 @@ architecture a_processador of processador is
 		);
 	end component;
 
+	--==== RAM
+
+	component ram is
+		port(	clk : in std_logic;
+				endereco : in unsigned(6 downto 0);
+				wr_en : in std_logic;
+				dado_in : in unsigned(15 downto 0);
+				dado_out : out unsigned(15 downto 0)
+			);
+	end component;
+
 	--==================================================
 	--==== Ligacoes
 	--==================================================
@@ -98,7 +111,8 @@ architecture a_processador of processador is
 	signal bank_out1, bank_out2: unsigned(15 downto 0);
 	signal bank_write_reg : unsigned(2 downto 0);
 	signal reg_write : std_logic;
-	
+	signal write_bank_data: unsigned(15 downto 0);
+
 	signal data_pc : unsigned(6 downto 0);
 	signal data_in_pc : unsigned(6 downto 0);
 	signal data_out_pc: unsigned(6 downto 0);
@@ -113,6 +127,11 @@ architecture a_processador of processador is
 	signal carry_ula_out : std_logic;
 	--signal wr_en : std_logic;
 
+	signal endereco_ram : unsigned(6 downto 0);
+	signal dado_out_ram : unsigned(15 downto 0);
+	signal wr_en_ram: std_logic;
+	signal write_bank_sel: std_logic;
+
 	signal wr_en_pc : std_logic;
 	signal data_rom: unsigned(15 downto 0);
 	
@@ -124,7 +143,7 @@ architecture a_processador of processador is
 		bank8reg_p: bank8reg port map(	read_reg1 =>read_reg1,
 										read_reg2 =>read_reg2,
 										write_reg => write_reg,
-										write_data=>ula_out,
+										write_data=>write_bank_data,--ula_out,
 										reg_write=>reg_write,--flag
 										clk => clk,
 										rst => rst,
@@ -152,6 +171,13 @@ architecture a_processador of processador is
 							dado=>data_rom
 							);
 
+		ram_p: ram port map(	clk =>clk,
+								endereco => endereco_ram,
+								wr_en => wr_en_ram,
+								dado_in => bank_out2,
+								dado_out => dado_out_ram
+							);
+
 		unidadeControle_p: unidadeControle port map( clk => clk,
 											rst => rst,
 											zero => zero_ula_out,
@@ -165,11 +191,14 @@ architecture a_processador of processador is
 											ALUSrcA=>ALUSrcA,
 											ALUSrcB=>ALUSrcB,
 											ALUOp=>sel_ula,
-											wr_en_pc=>wr_en_pc
+											wr_en_pc=>wr_en_pc,
+											wr_en_ram=>wr_en_ram,
+											write_bank_sel=>write_bank_sel
 										   );
 
 		--==== Ligacoes
 		
+		--Mux
 		ula_in1 <= 	bank_out1 when ALUSrcA = '1' else
 					"000000000"&data_out_pc;
 
@@ -178,6 +207,11 @@ architecture a_processador of processador is
 				cte when ALUSrcB = "10" else--cte ou Bcond
 				"0000000000000000"; -- mov
 				   
+		write_bank_data <= ula_out when write_bank_sel='1' else  -- saida da ula
+						   dado_out_ram;                         -- saida da ram
+
+
+		endereco_ram <= data_rom(6 downto 0);
 
 		pcsaida <=data_out_pc;
 		instrucao <=data_rom;
@@ -186,5 +220,7 @@ architecture a_processador of processador is
 		saidaULA <=ula_out;
 
 		data_in_pc <= ula_out(6 downto 0);
+
+		
 
 end architecture;

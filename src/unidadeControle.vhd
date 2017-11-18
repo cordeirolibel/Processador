@@ -18,8 +18,9 @@ entity unidadeControle is
 			ALUSrcA : out std_logic;
 			ALUSrcB : out unsigned(1 downto 0);
 			ALUOp: out unsigned(2 downto 0);
-			wr_en_pc: out std_logic
-
+			wr_en_pc: out std_logic;
+			wr_en_ram: out std_logic;
+			write_bank_sel : out std_logic --0:ram  1:ula
 	);
 end entity;
 
@@ -191,6 +192,13 @@ architecture a_unidadeControle of unidadeControle is
 				 '1' when estado = "10" and Bcond = '1' else -- mantem no estado de atualizacao do pc
 				 '0';
 
+		-- RAM: oK
+		wr_en_ram <= '1' when opcode(5 downto 2) = "1001" and second_int = '0' and estado = "01" else -- SST.H
+					 '0';
+
+		write_bank_sel <= '0' when opcode(5 downto 2) = "1000" and second_int = '0' and estado = "01" else --ram  -- SLD.H
+					      '1';          																   --ula
+
 		-- ULA: OK
 
 		ALUOp_s <=	"000" when (opcode = "001110" or opcode = "110000")and(estado = "01" and second_int = '0') else -- add e addi
@@ -215,6 +223,7 @@ architecture a_unidadeControle of unidadeControle is
 												 opcode = "001000" or--or
 												 opcode = "001101" or--sub
 												 opcode = "001001" or--xor
+												 opcode(5 downto 2) = "1000" or -- SLD.H
 												 second_int = '1')else--addi,andi,xori,ori
 					'0';
 
