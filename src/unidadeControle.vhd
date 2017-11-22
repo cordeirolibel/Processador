@@ -192,7 +192,7 @@ architecture a_unidadeControle of unidadeControle is
 				 '1' when estado = "10" and Bcond = '1' else -- mantem no estado de atualizacao do pc
 				 '0';
 
-		-- RAM: oK
+		-- RAM: OK
 		wr_en_ram <= '1' when opcode(5 downto 2) = "1001" and second_int = '0' and estado = "01" else -- SST.H
 					 '0';
 
