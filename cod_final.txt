@@ -1,0 +1,42 @@
+	addi 1,$r0,$r1 				#r1<-1
+	addi 32,$r0,$r2 			#r2<-32
+SALVARAM:
+		SST.H $r1,($r1) 		#ram(r1)<-r1
+		addi 1,$r1,$r1 			#r1++
+		mov $r1,$r3 			#r3<-r1
+		sub $r2,$r3 			#r3<-r3-r2
+		BGT SALVARAM			#r2>r3?	
+
+
+	#for(r1=1;r1!=32;r1++)
+	addi 2,$zero,$r1    		#r1<-1
+LOOP1:	
+		SLD.H $r4,($r1) 		#r4<-ram(r1)
+		# if (r4 != 0)
+		sub $r4,$r0
+		BGT N_PRIMO 			# r4>0 entao pula
+			mov $r4, $r5 		#r5<-r4
+		LOOP2:
+			add $r4, $r5 		#r5+=r4
+			#if(r5<32)
+			mov $r2,$r3 		#r3<-r2
+			sub $r5,$r3 		#r3<-r3-r5
+			BGT MAIS32      	#r5>32
+				SST.H $r0,($r5)	#ram(r5)<-0
+				JMP LOOP2
+		MAIS32:
+	N_PRIMO:
+	addi $r1,$r1,1				#r1+=1
+	mov  $r1,$r3   				#r3<-r1
+	sub  $r2,$r3    			#r3<-r3-r2 
+	BGT LOOP1       			#r2>r3 entao pula
+
+
+	addi 1,$r0,$r1 				#r1<-1
+LERAM:
+		SLD.H $r4,($r1) 		#r4<-ram(r1)
+		addi 1,$r1,$r1 			#r1++
+		mov $r1,$r3 			#r3<-r1
+		sub $r2,$r3 			#r3<-r3-r2
+		BGT LERAM 				#r2>r3?	 
+	
