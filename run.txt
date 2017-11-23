@@ -29,12 +29,12 @@ ghdl -a pc.vhd
 ghdl -e pc
 ghdl -a maquinaEstados.vhd
 ghdl -e maquinaEstados
-ghdl -a rom.vhd
-ghdl -e rom
 ghdl -a ula.vhd
 ghdl -e ula
 ghdl -a ram.vhd
 ghdl -e ram
+ghdl -a rom.vhd
+ghdl -e rom
 ghdl -a unidadeControle.vhd
 ghdl -e unidadeControle
 ghdl -a processador.vhd

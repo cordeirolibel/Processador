@@ -211,7 +211,8 @@ architecture a_processador of processador is
 						   dado_out_ram;                         -- saida da ram
 
 
-		endereco_ram <= data_rom(6 downto 0);
+		--endereco_ram <= data_rom(6 downto 0);
+		endereco_ram <= bank_out1(6 downto 0);
 
 		pcsaida <=data_out_pc;
 		instrucao <=data_rom;

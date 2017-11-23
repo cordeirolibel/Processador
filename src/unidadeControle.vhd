@@ -193,11 +193,11 @@ architecture a_unidadeControle of unidadeControle is
 				 '0';
 
 		-- RAM: OK
-		wr_en_ram <= '1' when opcode(5 downto 2) = "1001" and second_int = '0' and estado = "01" else -- SST.H
+		wr_en_ram <= '1' when opcode = "100100" and second_int = '0' and estado = "01" else -- SST.H
 					 '0';
 
-		write_bank_sel <= '0' when opcode(5 downto 2) = "1000" and second_int = '0' and estado = "01" else --ram  -- SLD.H
-					      '1';          																   --ula
+		write_bank_sel <= '0' when opcode = "100000" and second_int = '0' and estado = "01" else --ram  -- SLD.H
+					      '1';          																--ula
 
 		-- ULA: OK
 
