@@ -19,8 +19,10 @@ architecture a_ula of ula is
 	signal saida17: unsigned(16 downto 0);
 
 	begin
-		entrA17 <= '0' & entrA;
-		entrB17 <= '0' & entrB;
+		entrA17 <= '0' & entrA when entrA(15)='0' else
+				   '1' & entrA;
+		entrB17 <= '0' & entrB when entrB(15)='0' else
+				   '1' & entrB;
 
 		saida17 <=	entrA17+entrB17		when sel="000" else -- Soma
 					entrA17-entrB17		when sel="001" else -- Subtracao
@@ -32,7 +34,7 @@ architecture a_ula of ula is
 					entrA17 			when sel="111" else -- 
 					"00000000000000000";
 
-		carry <= saida17(16) when sel = "000" else
+		carry <= saida17(16) when sel = "000" or sel = "001"  else
 				 '0';
 
 		-- por equando nada de carry

@@ -42,8 +42,8 @@ SUB reg1,reg2           rrrrr001101RRRRR       	GR[reg2]<-GR[reg2]–GR[reg1]
 XOR reg1,reg2           rrrrr001001RRRRR       	GR[reg2]<-GR[reg2] XOR GR[reg1] 
 XORI imm16,reg1,reg2    rrrrr110101RRRRR       	GR[reg2]<-GR[reg1] XOR zero-extend (imm16) 
 						iiiiiiiiiiiiiiii
-SST.H                   rrrrr1001ddddddd       	adr<-ep+zero-extend(disp7)  Store-memory(adr,GR[reg2],Halfword)
-SLD.H                   rrrrr1000ddddddd       	adr<-ep+zero-extend(disp7)  GR[reg2]<-sign-extend(Load-memory(adr,Halfword)) 
+SST.H (*)               rrrrr1001ddddddd       	adr<-ep+zero-extend(disp7)  Store-memory(adr,GR[reg2],Halfword)
+SLD.H (*)               rrrrr1000ddddddd       	adr<-ep+zero-extend(disp7)  GR[reg2]<-sign-extend(Load-memory(adr,Halfword)) 
 SST.H                   rrrrr100100RRRRR       	adr<-GR[reg1]    Store-memory(adr,GR[reg2],Halfword)
 SLD.H                   rrrrr100000RRRRR       	adr<-GR[reg1]    GR[reg2]<-sign-extend(Load-memory(adr,Halfword)) 
 						  R2   Op   R1
@@ -151,3 +151,52 @@ R 				Previously saved values are restored.
 
 =======================================================================================
 	======= COD FINAL =======
+	
+	    -- caso endereco => conteudo
+		0  => "0000111000000000", --  addi 1,$r0,$r1
+	 	1  => "0000000000000001", -- cte 1
+	 	2  => "0001011000000000", -- addi 33,$r0,$r2
+	 	3  => "0000000000100001", -- cte 33 
+		-- SALVARAM
+	 	4  => "0000110010000001", -- SST.H $r1,($r1) 
+		5  => "0000111000000001", -- addi 1,$r1,$r1
+		6  => "0000000000000001", -- cte 1
+		7  => "0001100000000001", -- mov $r1,$r3
+		8  => "0001100110100010", -- sub $r2,$r3
+		9  => "1111110110111011", -- BGT SALVARAM (-5)
+								  --58950ns
+		-- TODO
+		10 => "0000111000000000", -- addi 2,$r0,$r1  
+		11 => "0000000000000010", -- cte 2
+		-- LOOP1
+		12 => "0010010000000001", -- SLD.H $r4,($r1) 
+		13 => "0000000110100100", -- sub $r4,$r0
+		14 => "0000110110100010", -- BZ	 N_PRIMO (10)(00001010)
+		15 => "0010100000000100", -- mov $r4, $r5
+		-- LOOP2
+		16 => "0010100111000100", -- add $r4, $r5
+		17 => "0001100000000010", -- mov $r2,$r3
+		18 => "0001100110100101", -- sub $r5,$r3
+		19 => "0000010111011011", -- BGT MAIS32 (5) (00000101)
+		20 => "0000010010000101", -- SST.H $r0,($r5)
+		21 => "0001111000000000", -- addi 16,$r0,$r3  
+		22 => "0000000000010000", -- cte 16
+		23 => "0000000001100011", -- JMP $r3 (LOOP2 =16)
+		-- MAIS32
+		-- N_PRIMO
+		24 => "0000111000000001", -- addi $r1,$r1,1
+		25 => "0000000000000001", -- cte 1
+		26 => "0001100000000001", -- mov  $r1,$r3
+		27 => "0001100110100010", -- sub  $r2,$r3
+		28 => "1111010110001011", -- BGT LOOP1 (-16)(11110000)
+		
+
+		29 => "0000111000000000", -- addi 1,$r0,$r1
+		30 => "0000000000000001", -- cte 1
+		-- LERAM
+		31 => "0010010000000001", -- SLD.H $r4,($r1)
+		32 => "0000111000000001", -- addi 1,$r1,$r1
+		33 => "0000000000000001", -- cte 1
+		34 => "0001100000000001", -- mov $r1,$r3
+		35 => "0001100110100010", -- sub $r2,$r3
+		36 => "1111110110111011", -- BGT LERAM (-5)

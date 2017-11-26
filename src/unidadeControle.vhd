@@ -89,13 +89,14 @@ architecture a_unidadeControle of unidadeControle is
 	signal reg_write_s: std_logic;
 	signal reg_write_zero_s: std_logic;
 	signal reg_write_carry_s: std_logic;
-
+	signal reg_Bcond_s: std_logic;
 
 	signal cccc_Bcond: unsigned(3 downto 0);
 
 	signal zero_ant : std_logic;
 	signal carry_ant : std_logic;
 	signal Bcond : std_logic;
+	signal Bcond_ant : std_logic;
 
 
 	begin
@@ -140,6 +141,13 @@ architecture a_unidadeControle of unidadeControle is
 										wr_en=>reg_write_carry_s,
 										data_in=>carry,
 										data_out=>carry_ant
+									);
+
+		Bcond_ant_p: reg1bit port map(	clk=>clk,
+										rst=>rst,
+										wr_en=>reg_Bcond_s,
+										data_in=>Bcond,
+										data_out=>Bcond_ant
 									);
 
 		ALUOp_ant_p: reg3bits port map(	clk=>clk,
@@ -187,9 +195,9 @@ architecture a_unidadeControle of unidadeControle is
 					  second_int_ant;
 
 		Bcond <= '1' when opcode(5 downto 2) = "1011" and second_int = '0' and estado = "01" and(
-						  (cccc_Bcond = "0010" and zero_ant = '1') or  -- pula se zero = 1
-						  (cccc_Bcond = "1011" and (zero_ant = '0' and carry_ant = '0'))) else -- pula se maior = 1
-				 '1' when estado = "10" and Bcond = '1' else -- mantem no estado de atualizacao do pc
+						  (cccc_Bcond = "0010" and zero_ant = '1') or  -- pula se zero = 1 BZ
+						  (cccc_Bcond = "1011" and (zero_ant = '0' and carry_ant = '0'))) else -- pula se maior = 1 BGT
+				 '1' when estado = "10" and Bcond_ant = '1' else -- mantem no estado de atualizacao do pc
 				 '0';
 
 		-- RAM: OK
@@ -247,6 +255,9 @@ architecture a_unidadeControle of unidadeControle is
 
 		reg_write_s <= '1' when estado = "10" else
 					 '0';
+
+		reg_Bcond_s <= '1' when estado = "01" else
+					  '0';
 
 		reg_write_zero_s <= '1' when estado = "01" and 
 									(opcode = "001110" or --add
